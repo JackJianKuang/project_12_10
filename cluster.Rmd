@@ -15,25 +15,27 @@ df_data <- readRDS("data/ss14hca.rds")
 ```
 
 ### Nitin
-
 ```{r}
-hist(df_data$FINCP,main="Family Income",col="Red",xlab="Income")
+hist(df_data$FINCP, main="Family Income", col="Red", xlab="Income")
 ```
 
-```{r}
-plot(df_data$BDSP,df_data$FINCP, col="blue",xlab="Number of Rooms", ylab="Family Income",main="Bedrooms by Income")
+The histogram above shows the distribution of income within California. However the data might be restricted to a maximum amount, for privacy concerns.
+
+
+```{r,}
+boxplot(VALP~BDSP, df_data, col="green", main="Property Value by Number of Bedrooms",xlab="Number of Bedrooms", ylab="Property Value")
 ```
 
-```{r}
-boxplot(VALP~BDSP,df_data)
-```
+There is a clear effect on property value by the varying number of bedrooms. It is expected that the more rooms there are in a home, the more valuable the property would be and that is show in the boxplot above. The dark lines in the boxes display the mean value and the box itself displays the 25th to 75th price range, of all properties with a certain number of bedrooms.
 
 
-```{r}
+```{r,echo=FALSE}
 dataMatrix <- na.omit(df_data[,c("VALP", "BDSP", "YBL")])
 dataMatrix1<- dataMatrix[1:10000,]
-pairs(~BDSP + VALP + YBL, data=dataMatrix1,main="Scatterplots on Housing Factors")
+pairs(~BDSP + VALP + YBL, data=dataMatrix1, main="Scatterplot on Housing Factors", col="blue")
 ```
+
+A sample of complex plots which can be made to look at correlations between multiple predictor variables.
 
 ### Edmund
 
