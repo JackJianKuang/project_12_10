@@ -14,19 +14,23 @@ df_data <- read.csv("data/ss14hca.csv")
 
 ### Nitin
 
-```{r,echo=FALSE,results=FALSE}
-Multigenerational <- df_data$MULTG
-LimitedEnglish <- df_data$LNGI
-MovedintoHouse <- df_data$MV
-NumbofChildren <- df_data$NOC
-MonthlyRent <- df_data$RNTP
+```{r}
+hist(df_data$FINCP,main="Family Income",col="Red",xlab="Income")
 ```
 
 ```{r}
-hist(df_data$FINCP,main="Family Income",col="Red",xlab="Income")
 plot(df_data$BDSP,df_data$FINCP, col="blue",xlab="Number of Rooms", ylab="Family Income",main="Bedrooms by Income")
+```
+
+```{r}
+boxplot(VALP~BDSP,df_data)
+```
 
 
+```{r}
+dataMatrix <- na.omit(df_data[,c("VALP", "BDSP", "YBL")])
+dataMatrix1<- dataMatrix[1:10000,]
+pairs(~BDSP + VALP + YBL, data=dataMatrix1,main="Scatterplots on Housing Factors")
 ```
 
 ### Jack Kuang
