@@ -8,7 +8,7 @@ runtime: shiny
 
 dictionary_URL : "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf"
 
-```{r}
+```{r load_data}
 df_data <- read.csv("data/ss14hca.csv")
 ```
 
@@ -31,83 +31,59 @@ plot(df_data$BDSP,df_data$FINCP, col="blue",xlab="Number of Rooms", ylab="Family
 
 ### Jack Kuang
 
-Q5. How many 5 or more bedroom housese in the state of California?  
-```{r}
+How many bedrooms in each house ?  
+```{r bedrooms}
 table(df_data$BDSP)
 barplot(table(df_data$BDSP))
+```
 
+How is the rent looks like ?
+```{r rent}
 # RNTP : monthly rent
 hist(df_data$RNTP)
+```
 
+What's the relationship between number of bedroom and rent ?
+```{r bedroom_rent}
 boxplot(RNTP ~ BDSP, df_data)
-
 ```
-Q6. How many houses have both the presence of persons 65 years over AND 18 years younger?
+
+Histgram of Property Value and Insurance
 ```{r}
-# R18: Presence of persons under 18 years in household (unweighted)
-# R65: Presence of persons 65 years and over in household (unweighted)
-sum(df_data$R18 == 1 & df_data$R65 %in% c(1, 2))
-
-
-
-```
-Q7. What’s the probability of a 3 bedroom house have both younger (<18yrs) and older(>65yrs) residents ? 
-```{r}
-df_BDS_3 <- df_data[df_data$BDS == 3,]
-df_BDS_3_sub <- df_BDS_3[df_BDS_3$R18==1 & df_BDS_3$R65 %in% c(1,2),]
-(prob <- nrow(df_BDS_3_sub) / nrow(df_BDS_3))
-```
-Q8. Compare the result from Q7 between California and Idho, what can you say about it?  
-Q9. How do you use distant metric to measure categorical variables?  
-Q10. Use only 2 numeric variables, cluster the dataset, what can you say about it?  
-```{r}
-## cluster property value(VALP), insurance(INSP)
-dataMatrix <- na.omit(df_data[,c("VALP", "INSP", "HINCP")])
-dataMatrix.scaled <- dataMatrix[,-3]
-kmeansObj <- kmeans(dataMatrix.scaled, centers = 5)
-plot(dataMatrix[,-3], col=kmeansObj$cluster)
-
-dataMatrix$hincpppp <- cut(dataMatrix[,3], breaks = 5)
-
-table(kmeansObj$cluster, dataMatrix$hincpppp)
-# t(dataMatrix)[, order(kmeansObj$cluster)]
-
-## cluster property value(VALP), insurance(INSP), year buit (YBL)
-dataMatrix <- na.omit(df_data[,c("VALP", "INSP", "YBL")])
-dataMatrix.scaled <- scale(dataMatrix)
-kmeansObj <- kmeans(dataMatrix.scaled, centers = 3)
-plot(dataMatrix, col=kmeansObj$cluster)
-
-table(kmeansObj$cluster)
+hist(df_data$VALP)
+hist(df_data$INSP)
 ```
 
-Q11.Include 3 more numeric variables you think are sensible, cluster again, what are the results and why do you see that results?  
-Q12.Try using different number of initial points (number of clusters), see at which point your number of clusters stablize.  
-
-
-
-
-## Inputs and Outputs
-
-You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
-
-```{r, echo=FALSE}
+Use only 2 numeric variables, cluster the dataset, what can you say about it?  
+```{r cluster_2vars, echo=FALSE}
 inputPanel(
-  selectInput("n_breaks", label = "Number of bins:",
-              choices = c(10, 20, 35, 50), selected = 20),
-  
-  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
-              min = 0.2, max = 2, value = 1, step = 0.2)
+  selectInput("n_clusters", label = "Number of clusters:",
+              choices = c(2, 3, 5, 10), selected = 3)
 )
 
+## cluster property value(VALP), insurance(INSP)
+dataMatrix <- na.omit(df_data[,c("VALP", "INSP")])
+dataMatrix.scaled <- scale(dataMatrix)
+
 renderPlot({
-  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
-       xlab = "Duration (minutes)", main = "Geyser eruption duration")
-  
-  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
-  lines(dens, col = "blue")
+    kmeansObj <- kmeans(dataMatrix.scaled, centers = as.numeric(input$n_clusters))
+    plot(dataMatrix, col=kmeansObj$cluster, main = "cluster on property value(VALP) and insurance(INSP)", 
+         xlab="property value(VALP)", ylab = "insurance(INSP)")
 })
 ```
+
+Include 3 more numeric variables you think are sensible, cluster again, what are the results and why do you see that results?
+```{r cluster_3vars}
+## cluster property value(VALP), insurance(INSP), year buit (YBL)
+dataMatrix2 <- na.omit(df_data[,c("VALP", "INSP", "YBL")])
+dataMatrix2.scaled <- scale(dataMatrix2)
+kmeansObj2 <- kmeans(dataMatrix2.scaled, centers = 3)
+plot(dataMatrix2, col=kmeansObj2$cluster)
+
+table(kmeansObj2$cluster)
+```
+
+
 
 ## Embedded Application
 
@@ -119,7 +95,4 @@ shinyAppDir(
   )
 )
 ```
-
-
-
 
