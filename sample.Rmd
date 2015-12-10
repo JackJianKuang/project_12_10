@@ -1,0 +1,44 @@
+---
+title: "Open House Presentation"
+author: "Edmund Tran"
+date: "December 9, 2015"
+output: html_document
+runtime: shiny
+---
+```{r}
+housing <- read.csv("/Users/Edmund/Rworkspace/csv_hca/ss14hca.csv", stringsAsFactors = FALSE)
+
+```
+We'll show how effective a sample mean is at estimating the population mean
+
+Sample: monthly rents of x properties
+Population: monthly rents of all properties in California (52,358 data points).
+Population Mean: $1,249
+
+
+```{r, echo=FALSE}
+inputPanel(
+  sliderInput("sample_size", label = "Sample Size:",
+              min = 10, max = 100, value = 10, step = 10)
+)
+
+renderPlot({
+  meanV <- NULL
+  allRents <- housing[complete.cases(housing$RNTP), "RNTP"]
+  # choose sample 1000x
+  for (i in 1:1000) {
+    sampleRents <- sample(allRents, input$sample_size)
+    meanV <- c(meanV, mean(sampleRents))
+  }
+
+  hist(meanV,
+     xlab = "Sample Mean",
+     ylab = "Frequency",
+     xlim = c(600, 1800),
+     ylim = c(0, 400),
+     main = "Distribution of 1000 Sample Means of Monthly Rents in CA")
+  
+  # show mean on graph for reference
+  abline(v = mean(allRents), col = "red")
+})
+```
