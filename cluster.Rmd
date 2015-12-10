@@ -1,0 +1,125 @@
+---
+title: 'Exploratory Data Analysis Case Study Project #1'
+author: "Jian Kuang"
+date: "December 4, 2015"
+output: html_document
+runtime: shiny
+---
+
+dictionary_URL : "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf"
+
+```{r}
+df_data <- read.csv("csv_hca/ss14hca.csv")
+```
+
+Some initial Exploratory Analysis Questions:  
+Q1: By reading the dictionary, which column_name in the dataset represents the State code?  
+ST  
+Q2: Which column_name in the dataset represents the number of bedrooms in the house?  
+BDS  
+Q3: Which column_name in the dataset represents the anual Property taxes?  
+TAXP 
+
+Q5. How many 5 or more bedroom housese in the state of California?  
+```{r}
+table(df_data$BDSP)
+barplot(table(df_data$BDSP))
+
+# RNTP : monthly rent
+hist(df_data$RNTP)
+
+boxplot(RNTP ~ BDSP, df_data)
+
+```
+Q6. How many houses have both the presence of persons 65 years over AND 18 years younger?
+```{r}
+# R18: Presence of persons under 18 years in household (unweighted)
+# R65: Presence of persons 65 years and over in household (unweighted)
+sum(df_data$R18 == 1 & df_data$R65 %in% c(1, 2))
+
+
+
+```
+Q7. What’s the probability of a 3 bedroom house have both younger (<18yrs) and older(>65yrs) residents ? 
+```{r}
+df_BDS_3 <- df_data[df_data$BDS == 3,]
+df_BDS_3_sub <- df_BDS_3[df_BDS_3$R18==1 & df_BDS_3$R65 %in% c(1,2),]
+(prob <- nrow(df_BDS_3_sub) / nrow(df_BDS_3))
+```
+Q8. Compare the result from Q7 between California and Idho, what can you say about it?  
+Q9. How do you use distant metric to measure categorical variables?  
+Q10. Use only 2 numeric variables, cluster the dataset, what can you say about it?  
+```{r}
+## cluster property value(VALP), insurance(INSP)
+dataMatrix <- na.omit(df_data[,c("VALP", "INSP", "HINCP")])
+dataMatrix.scaled <- dataMatrix[,-3]
+kmeansObj <- kmeans(dataMatrix.scaled, centers = 5)
+plot(dataMatrix[,-3], col=kmeansObj$cluster)
+
+dataMatrix$hincpppp <- cut(dataMatrix[,3], breaks = 5)
+
+table(kmeansObj$cluster, dataMatrix$hincpppp)
+# t(dataMatrix)[, order(kmeansObj$cluster)]
+
+## cluster property value(VALP), insurance(INSP), year buit (YBL)
+dataMatrix <- na.omit(df_data[,c("VALP", "INSP", "YBL")])
+dataMatrix.scaled <- scale(dataMatrix)
+kmeansObj <- kmeans(dataMatrix.scaled, centers = 3)
+plot(dataMatrix, col=kmeansObj$cluster)
+
+table(kmeansObj$cluster)
+```
+
+Q11.Include 3 more numeric variables you think are sensible, cluster again, what are the results and why do you see that results?  
+Q12.Try using different number of initial points (number of clusters), see at which point your number of clusters stablize.  
+
+
+
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+## Embedded Application
+
+It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+
+```{r, echo=FALSE}
+shinyAppDir(
+  system.file("examples/06_tabsets", package="shiny"),
+  options=list(
+    width="100%", height=550
+  )
+)
+```
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+
