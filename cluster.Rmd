@@ -24,12 +24,20 @@ hist(df_data$FINCP, main = "Family Income", col = "Red", xlab = "Income")
 
 The histogram above shows the distribution of income within California. However the data might be restricted to a maximum amount, for privacy concerns.
 
-### How does property value change by the number of bedrooms ?
+### How does property value change with the number of bedrooms?
 ```{r,}
 boxplot(VALP~BDSP, df_data, col = "green", main = "Property Value by Number of Bedrooms", xlab = "Number of Bedrooms", ylab = "Property Value")
 ```
 
 There is a clear effect on property value by the varying number of bedrooms. It is expected that the more rooms there are in a home, the more valuable it will be and that is shown in the boxplot above. The dark lines in the boxes display the mean value and the box itself represents the 25th to 75th percentile of property values for all properties with a certain number of bedrooms.
+
+### Relationship between Property Value and Family Income 
+We add a linear regression line to the plot to the relationship.
+```{r}
+with(df_data, smoothScatter(VALP, FINCP, xlab = "Property Value", ylab = "Family Income"))
+model <- lm(FINCP ~ VALP, df_data)
+abline(model, lwd=2, col="green")
+```
 
 ### Correlation Metrics : Property Specifications 
 BDSP : bedroom number  
@@ -82,12 +90,12 @@ renderPlot({
 
 
 ## Cluster
-###Clustering on two numeric variables: property value (VALP) and insurance price (INSP)  
+###Clustering on two numeric variables: property value and insurance price  
 Let's see the summary of these two variables first:
 ```{r, echo=FALSE}
 par(mfrow=c(1,2))
-boxplot(df_data$VALP)
-boxplot(df_data$INSP)
+boxplot(df_data$VALP, main="Property Value")
+boxplot(df_data$INSP, main="Insurance Price")
 ```
 
 We use the shiny package here, so you can change the number of clusters.
@@ -103,8 +111,8 @@ dataMatrix.scaled <- scale(dataMatrix)
 
 renderPlot({
     kmeansObj <- kmeans(dataMatrix.scaled, centers = as.numeric(input$n_clusters))
-    plot(dataMatrix, col=kmeansObj$cluster, main = "cluster on property value(VALP) and insurance(INSP)", 
-         xlab="property value(VALP)", ylab = "insurance(INSP)")
+    plot(dataMatrix, col=kmeansObj$cluster, main = "Cluster on Property Value and Insurance Price", 
+         xlab="Property Value", ylab = "Insurance Price")
 })
 ```
 
