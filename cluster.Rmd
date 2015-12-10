@@ -70,32 +70,16 @@ renderPlot({
 ```
 
 
-### Jack Kuang
-
-How many bedrooms in each house ?  
-```{r bedrooms}
-table(df_data$BDSP)
-barplot(table(df_data$BDSP))
+## Cluster : Jack Kuang
+### 2 numeric variables cluster : property value(VALP) and insurance(INSP)  
+let's see the summary of these two variables first:
+```{r, echo=FALSE}
+par(mfrow=c(1,2))
+boxplot(df_data$VALP)
+boxplot(df_data$INSP)
 ```
 
-How is the rent looks like ?
-```{r rent}
-# RNTP : monthly rent
-hist(df_data$RNTP)
-```
-
-What's the relationship between number of bedroom and rent ?
-```{r bedroom_rent}
-boxplot(RNTP ~ BDSP, df_data)
-```
-
-Histgram of Property Value and Insurance
-```{r}
-hist(df_data$VALP)
-hist(df_data$INSP)
-```
-
-Use only 2 numeric variables, cluster the dataset, what can you say about it?  
+We use shiny package at here, so customer can change the number of cluster
 ```{r cluster_2vars, echo=FALSE}
 inputPanel(
   selectInput("n_clusters", label = "Number of clusters:",
@@ -113,15 +97,11 @@ renderPlot({
 })
 ```
 
-Include 3 more numeric variables you think are sensible, cluster again, what are the results and why do you see that results?
-```{r cluster_3vars}
-## cluster property value(VALP), insurance(INSP), year buit (YBL)
+### 3 numberic variables cluster : property value(VALP), insurance(INSP), year built(YBL)
+```{r cluster_3vars, echo=FALSE}
+## cluster property value(VALP), insurance(INSP), year built (YBL)
 dataMatrix2 <- na.omit(df_data[,c("VALP", "INSP", "YBL")])
 dataMatrix2.scaled <- scale(dataMatrix2)
 kmeansObj2 <- kmeans(dataMatrix2.scaled, centers = 3)
 plot(dataMatrix2, col=kmeansObj2$cluster)
-
-table(kmeansObj2$cluster)
 ```
-
-
