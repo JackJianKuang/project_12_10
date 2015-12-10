@@ -8,8 +8,10 @@ runtime: shiny
 
 dictionary_URL : "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf"
 
-```{r load_data}
-df_data <- read.csv("data/ss14hca.csv")
+```{r load_data, cache=TRUE}
+# df_data <- read.csv("data/ss14hca.csv")
+# saveRDS(df_data, file = "data/ss14hca.rds")
+df_data <- readRDS("data/ss14hca.rds")
 ```
 
 ### Nitin
@@ -83,7 +85,7 @@ We use shiny package at here, so customer can change the number of cluster
 ```{r cluster_2vars, echo=FALSE}
 inputPanel(
   selectInput("n_clusters", label = "Number of clusters:",
-              choices = c(2, 3, 5, 10), selected = 3)
+              choices = c(2, 3, 5, 10), selected = 5)
 )
 
 ## cluster property value(VALP), insurance(INSP)
@@ -98,7 +100,7 @@ renderPlot({
 ```
 
 ### 3 numberic variables cluster : property value(VALP), insurance(INSP), year built(YBL)
-```{r cluster_3vars, echo=FALSE}
+```{r cluster_3vars, echo=FALSE, cache=TRUE}
 ## cluster property value(VALP), insurance(INSP), year built (YBL)
 dataMatrix2 <- na.omit(df_data[,c("VALP", "INSP", "YBL")])
 dataMatrix2.scaled <- scale(dataMatrix2)
