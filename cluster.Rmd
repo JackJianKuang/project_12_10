@@ -1,6 +1,6 @@
 ---
 title: 'Exploratory Data Analysis Case Study Project #1'
-author: "Jian Kuang"
+author: "Nitin Seelam, Jian Kuang"
 date: "December 4, 2015"
 output: html_document
 runtime: shiny
@@ -9,16 +9,27 @@ runtime: shiny
 dictionary_URL : "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf"
 
 ```{r}
-df_data <- read.csv("csv_hca/ss14hca.csv")
+df_data <- read.csv("data/ss14hca.csv")
 ```
 
-Some initial Exploratory Analysis Questions:  
-Q1: By reading the dictionary, which column_name in the dataset represents the State code?  
-ST  
-Q2: Which column_name in the dataset represents the number of bedrooms in the house?  
-BDS  
-Q3: Which column_name in the dataset represents the anual Property taxes?  
-TAXP 
+### Nitin
+
+```{r,echo=FALSE,results=FALSE}
+Multigenerational <- df_data$MULTG
+LimitedEnglish <- df_data$LNGI
+MovedintoHouse <- df_data$MV
+NumbofChildren <- df_data$NOC
+MonthlyRent <- df_data$RNTP
+```
+
+```{r}
+hist(df_data$FINCP,main="Family Income",col="Red",xlab="Income")
+plot(df_data$BDSP,df_data$FINCP, col="blue",xlab="Number of Rooms", ylab="Family Income",main="Bedrooms by Income")
+
+
+```
+
+### Jack Kuang
 
 Q5. How many 5 or more bedroom housese in the state of California?  
 ```{r}
@@ -76,10 +87,6 @@ Q12.Try using different number of initial points (number of clusters), see at wh
 
 
 
-This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
-
-To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
-
 ## Inputs and Outputs
 
 You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
@@ -104,8 +111,6 @@ renderPlot({
 
 ## Embedded Application
 
-It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
-
 ```{r, echo=FALSE}
 shinyAppDir(
   system.file("examples/06_tabsets", package="shiny"),
@@ -115,11 +120,6 @@ shinyAppDir(
 )
 ```
 
-Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
-
-You can also use the `shinyApp` function to define an application inline rather then in an external directory.
-
-In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
 
 
 
