@@ -1,6 +1,6 @@
 ---
 title: 'Exploratory Data Analysis Case Study Project #1'
-author: "Nitin Seelam, Jian Kuang"
+author: "Nitin Seelam, Edmund Tran, Jian Kuang"
 date: "December 4, 2015"
 output: html_document
 runtime: shiny
@@ -32,6 +32,43 @@ dataMatrix <- na.omit(df_data[,c("VALP", "BDSP", "YBL")])
 dataMatrix1<- dataMatrix[1:10000,]
 pairs(~BDSP + VALP + YBL, data=dataMatrix1,main="Scatterplots on Housing Factors")
 ```
+
+### Edmund
+
+We'll show how effective a sample mean is at estimating the population mean
+
+Sample: monthly rents of x properties
+Population: monthly rents of all properties in California (52,358 data points).
+Population Mean: $1,249
+
+
+```{r, echo=FALSE}
+inputPanel(
+  sliderInput("sample_size", label = "Sample Size:",
+              min = 10, max = 100, value = 10, step = 10)
+)
+
+renderPlot({
+  meanV <- NULL
+  allRents <- df_data[complete.cases(df_data$RNTP), "RNTP"]
+  # choose sample 1000x
+  for (i in 1:1000) {
+    sampleRents <- sample(allRents, input$sample_size)
+    meanV <- c(meanV, mean(sampleRents))
+  }
+
+  hist(meanV,
+     xlab = "Sample Mean",
+     ylab = "Frequency",
+     xlim = c(600, 1800),
+     ylim = c(0, 400),
+     main = "Distribution of 1000 Sample Means of Monthly Rents in CA")
+  
+  # show mean on graph for reference
+  abline(v = mean(allRents), col = "red")
+})
+```
+
 
 ### Jack Kuang
 
@@ -86,7 +123,6 @@ plot(dataMatrix2, col=kmeansObj2$cluster)
 
 table(kmeansObj2$cluster)
 ```
-
 
 
 ## Embedded Application
